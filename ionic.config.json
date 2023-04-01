@@ -1,0 +1,7 @@
+{
+  "name": "posapp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
