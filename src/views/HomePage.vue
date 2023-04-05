@@ -1,8 +1,11 @@
 <template>
   <ion-page>
     <ion-header :translucent="true">
-      <ion-toolbar>
-        <ion-title>Inbox</ion-title>
+      <ion-toolbar color="danger">
+        <ion-title>NAME STORE</ion-title>
+        <ion-buttons slot="end">
+          <ion-button routerLink="/add">Add New</ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
@@ -34,6 +37,9 @@ import {
   IonRefresherContent,
   IonTitle,
   IonToolbar,
+  IonButton,
+  IonButtons,
+  // IonMenuButton,
 } from '@ionic/vue';
 import MessageListItem from '@/components/MessageListItem.vue';
 import { getMessages, Message } from '@/data/messages';

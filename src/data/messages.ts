@@ -7,52 +7,52 @@ export interface Message {
 
 const messages: Message[] = [
   {
-    fromName: 'Matt Chorsey',
-    subject: 'New event: Trip to Vegas',
-    date: '9:32 AM',
+    fromName: 'Grocery Items',
+    subject: '02/04/2023',
+    date: '$140.00',
     id: 0
   },
   {
-    fromName: 'Lauren Ruthford',
-    subject: 'Long time no chat',
-    date: '6:12 AM',
+    fromName: 'Meat Item 2',
+    subject: '02/04/2023',
+    date: '$140.00',
     id: 1
   },
   {
-    fromName: 'Jordan Firth',
-    subject: 'Report Results',
-    date: '4:55 AM',
+    fromName: 'Grocery Items',
+    subject: '02/04/2023',
+    date: '$140.00',
     id: 2
 
   },
   {
-    fromName: 'Bill Thomas',
-    subject: 'The situation',
-    date: 'Yesterday',
+    fromName: 'Grocery Items',
+    subject: '02/04/2023',
+    date: '$140.00',
     id: 3
   },
   {
-    fromName: 'Joanne Pollan',
-    subject: 'Updated invitation: Swim lessons',
-    date: 'Yesterday',
+    fromName: 'Grocery Items',
+    subject: '02/04/2023',
+    date: '$140.00',
     id: 4
   },
   {
-    fromName: 'Andrea Cornerston',
-    subject: 'Last minute ask',
-    date: 'Yesterday',
+    fromName: 'Grocery Items',
+    subject: '02/04/2023',
+    date: '$140.00',
     id: 5
   },
   {
-    fromName: 'Moe Chamont',
-    subject: 'Family Calendar - Version 1',
-    date: 'Last Week',
+    fromName: 'Grocery Items',
+    subject: '02/04/2023',
+    date: '$140.00',
     id: 6
   },
   {
-    fromName: 'Kelly Richardson',
-    subject: 'Placeholder Headhots',
-    date: 'Last Week',
+    fromName: 'Grocery Items',
+    subject: '02/04/2023',
+    date: '$140.00',
     id: 7
   }
 ];
