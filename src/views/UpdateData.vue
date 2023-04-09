@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     
-    <header-form >Add New</header-form>
+    <header-form >Update</header-form>
     
     <ion-content :fullscreen="true">
       <ion-item>

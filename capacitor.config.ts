@@ -24,6 +24,12 @@ const config: CapacitorConfig = {
     //   }
     // }
   },
+  // server: {
+    // url: "http://localhost:8100",
+    // hostname: "192.168.10.195",
+    // hostname: "10.0.2.2",
+    // cleartext: true
+  // },
 };
 
 export default config;

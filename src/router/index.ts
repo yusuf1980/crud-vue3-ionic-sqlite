@@ -17,8 +17,8 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/AddNew.vue')
   },
   {
-    path: '/message/:id',
-    component: () => import('../views/ViewMessagePage.vue')
+    path: '/update/:id',
+    component: () => import('../views/UpdateData.vue')
   }
 ]
 

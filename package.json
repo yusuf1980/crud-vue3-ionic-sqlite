@@ -20,8 +20,11 @@
     "@capacitor/status-bar": "4.1.1",
     "@ionic/vue": "^7.0.0",
     "@ionic/vue-router": "^7.0.0",
+    "capacitor-data-storage-sqlite": "^4.0.1",
     "core-js": "^3.6.5",
     "ionicons": "^7.0.0",
+    "localforage": "^1.10.0",
+    "util": "^0.12.5",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"
   },
