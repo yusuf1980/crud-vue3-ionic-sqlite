@@ -19,13 +19,8 @@ export default defineComponent({
   },
   setup() {
     const database = ref<any>(null)
-    provide("SQLITE-DB", database)
-
-    console.log('test')
-    
-    
-    // alert("In home "+(dbs as any)?.value)
-
+    provide("SQLITE-DB", database)    
+    console.log('testtt')
     const addInvoiceSell = async () => {
       try {
         await database.value?.run( 
