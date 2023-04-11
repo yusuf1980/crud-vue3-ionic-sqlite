@@ -18,9 +18,10 @@ export default defineComponent({
     IonRouterOutlet,
   },
   setup() {
+    alert('testttt')
     const database = ref<any>(null)
     provide("SQLITE-DB", database)    
-    console.log('testtt')
+    
     const addInvoiceSell = async () => {
       try {
         await database.value?.run( 
@@ -31,7 +32,7 @@ export default defineComponent({
       }
       catch(e) {
         alert('error' + e);
-        console.log("Error Initializing the Database Table")
+        console.log("Error add invoice Table")
       }
     }
 
