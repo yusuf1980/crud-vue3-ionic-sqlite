@@ -2,7 +2,7 @@
   <ion-page>
     
     <header-form >Update</header-form>
-    
+
     <ion-content :fullscreen="true">
       <ion-item>
         <ion-label class="ion-text-wrap">
@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { getMessage, Message } from '../data/messages';
 import {
   IonItem,
@@ -65,6 +65,8 @@ import {
 } from '@ionic/vue';
 import UnitForm from '@/components/UnitForm.vue';
 import HeaderForm from '@/components/HeaderForm.vue';
+import {getDB} from '../query/init'
+import { ref } from 'vue'
 
 interface Obj {
   rows:number;
@@ -87,6 +89,27 @@ interface Unit {
 let formUnit:Unit[] = reactive([])
 
 const route = useRoute();
+const id = route.params.id;
+
+const queryResults = ref<any>(null)
+
+const loadData = async () => {
+  try {
+    const init:any = await getDB();
+    const res = await init?.query(
+      "SELECT * FROM InvoiceSell;"
+    )
+    queryResults.value = res
+    console.log(queryResults)
+    // alert("select "+ res)
+    return true
+  }
+  catch(e) {
+    alert('error select details'+e)
+    console.log('error select ', e)
+  }
+}
+
 const message = getMessage(parseInt(route.params.id as string, 10))
 if(message != undefined) {
   form.name = message.name
@@ -112,5 +135,8 @@ const submit = () => {
     console.log(form)
   }
 }
+onMounted(async () => {
+  await loadData()
+})
 </script>
 

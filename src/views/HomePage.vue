@@ -19,10 +19,9 @@
           <ion-title size="large">Inbox</ion-title>
         </ion-toolbar>
       </ion-header>
-
-      <ion-list>
         {{ queryResults }}
-        <MessageListItem v-for="message in messages" :key="message.id" :message="message" />
+      <ion-list>
+        <MessageListItem v-for="message in queryResults.values" :key="message.invoiceNo" :message="message" />
       </ion-list>
     </ion-content>
   </ion-page>
@@ -43,31 +42,30 @@ import {
 } from '@ionic/vue';
 import MessageListItem from '@/components/MessageListItem.vue';
 import { getMessages, Message } from '@/data/messages';
-import { ref, inject, onMounted } from 'vue';
-// import { connect, getInvoices } from '../data/connect'
+import { ref, onMounted } from 'vue';
+import {initDb} from '../query/init'
 
-const db = ref<any>(null)
-const messages = ref<Message[]>(getMessages());
-
-const database = inject('SQLITE-DB')
 const queryResults = ref<any>(null)
-// alert("In home "+(database as any)?.value)
+
+const messages = ref<Message[]>(getMessages());
 
 const loadData = async () => {
   try {
-    const resp = await (database as any).value?.query(
+    const init:any = await initDb();
+    // alert("In home "+(database as any)?.value)
+    const res = await init.query(
       "SELECT * FROM InvoiceSell;"
     )
-    queryResults.value = resp.value
-    alert("error select "+queryResults.value)
+    queryResults.value = res
+    // alert("select "+ res)
     return true
   }
   catch(e) {
-    alert('error loading invoice')
+    alert('error select invoice')
   }
 }
 
-const data = ref<any>([])
+// const data = ref<any>([])
 
 const refresh = (ev: CustomEvent) => {
   setTimeout(() => {
@@ -75,6 +73,7 @@ const refresh = (ev: CustomEvent) => {
   }, 3000);
 };
 onMounted(async () => {
-  // await loadData()
+  // await loadInit()
+  await loadData()
 })
 </script>
