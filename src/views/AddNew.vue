@@ -1,15 +1,15 @@
 <template>
   <ion-page>
     
-    <header-form >Add New</header-form>
+    <header-form >Update</header-form>
     
     <ion-content :fullscreen="true">
       <ion-item>
         <ion-label class="ion-text-wrap">
           <h2>
             $ {{form.total}}
-            <span class="date" v-if="message!=undefined">
-              <ion-note>{{ message.date }}</ion-note>
+            <span class="date">
+              <ion-note>{{ form.date }}</ion-note>
             </span>
           </h2>
         </ion-label>
@@ -29,8 +29,9 @@
       </div>
 
       <unit-form
-      :formUnit="formUnit"
+      :items="items"
       @unitUpdate="updateTotal"
+      @addRow="addRow"
       /> 
 
       <div class="ion-float-right">
@@ -48,8 +49,8 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { reactive } from 'vue'
+import { useRoute, useRouter } from 'vue-router';
+import { reactive, onMounted, onUpdated } from 'vue'
 import { getMessage, Message } from '../data/messages';
 import {
   IonItem,
@@ -65,6 +66,8 @@ import {
 } from '@ionic/vue';
 import UnitForm from '@/components/UnitForm.vue';
 import HeaderForm from '@/components/HeaderForm.vue';
+import {initDb} from '../query/init'
+import { ref } from 'vue'
 
 interface Obj {
   rows:number;
@@ -79,38 +82,117 @@ const form: Message = reactive({
   total: 0,
 })
 interface Unit {
-  id:number;
-  qty:any;
+  orderNo:number;
+  quantity:any;
   price:any;
-  item:string;
+  aName:string;
 }
-let formUnit:Unit[] = reactive([])
+const formUnit:Unit[] = reactive([])
+const router = useRouter()
 
-const route = useRoute();
-const message = getMessage(parseInt(route.params.id as string, 10))
-if(message != undefined) {
-  form.name = message.name
-  form.phone = message.phone
-  form.date = message.date
-  form.total = message.total
+// const route = useRoute();
+// const id = route.params.id;
+
+const queryResult = ref<any>(null)
+const items = reactive<any>([
+  {orderNo: 1, aName: '', quantity: 1, price:null},
+  {orderNo: 2, aName: '', quantity: 1, price:null},
+  {orderNo: 3, aName: '', quantity: 1, price:null},
+])
+
+// const loadData = async () => {
+//   try {
+//     const init:any = await initDb();
+//     const res = await init.db?.query(
+//       "SELECT * FROM InvoiceSell WHERE invoiceNo=?;", [id]
+//     )
+//     const resItems = await init.db?.query(
+//       "SELECT * FROM InvoiceSellUnit WHERE invoiceNo=?;", [id]
+//     )
+//     queryResult.value = res.values[0]
+//     items = resItems.values
+//     // await init.sqilite.closeConnection("NoEncryption");
+//     form.name = queryResult.value.aName
+//     form.phone = queryResult.value.userNumber
+//     form.date = queryResult.value.dateG
+//     form.total = queryResult.value.amountPayed
+    
+//     return true
+//   }
+//   catch(e) {
+//     alert('error select details')
+//   }
+// }
+
+// watch(() => items, (first, second) => {
+//       console.log(
+//         "Watch props.selected function called with args:",
+//         first,
+//         second
+//       );
+//     });
+
+const addRow = () => {
+  let lastId:any
+  if(items.value.length) {
+    lastId = items.slice(-1)[0]
+     console.log(lastId.orderNo)
+  }
+  else lastId = 0;
+  items.push({orderNo: lastId.orderNo + 1, aName: '', quantity: 1, price:null})
 }
+
+// const message = getMessage(parseInt(route.params.id as string, 10))
+
 interface Update {
   tot: number;
-  updateUnit: any
+  // updateUnit: any
 }
 
 const updateTotal = (val:Update) => {
-  form.total = val.tot
-  formUnit = val.updateUnit
-  console.log(formUnit)
+  let tot:any = 0
+  items.forEach((a:any) => {
+    if(a.price != null) return tot += parseInt(a.price) * parseInt(a.quantity)
+  })
+  form.total = tot
 }
 
-const submit = () => {
-  if(formUnit.length > 0) {
-    if(form.name === '') form.name = "Unknow"
+const submit = async () => {
+  const updateUnit:Unit[] = []
+  if(items.length > 0) {
+    items.forEach((unit:Unit)=> {
+    if(unit.price != null && unit.aName != '') {
+        updateUnit.push(unit)
+    }
+  })
+  try {
+    const date = '2023/04/13';
+    const init:any = await initDb();
+    // const getLast:any = await init.db?.query(
+    //   "SELECT * FROM InvoiceSell ORDER BY invoiceNo DESC LIMIT 1;"
+    // )
+    // const id = getLast.values[0].invoiceNo + 1
+    const res = await init.db?.run(
+      "INSERT INTO InvoiceSell (invoiceNo, buildingNo, aName, userNumber, dateG, amountPayed) VALUES (?, ?, ?, ?, ?, ?);", [5, 6, form.name, form.phone, date, form.total]
+    )
+    // updateUnit.forEach(async (item:Unit) => {
+    //   await init.db?.query(
+    //     "UPDATE InvoiceSell SET aName=?, quantity=?, price=? WHERE orderNo=?;", [item.aName, parseInt(item.quantity), parseInt(item.price) ,item.orderNo]
+    //   )
+    // })
+    alert('add success')
+    router.push('/home')
+  }
+  catch(e) {
+    alert('error add new')
+  }
+    // if(form.name === '') form.name = "Unknow"
     // form.date = new Date().getDate().toString()
-    console.log(form)
+    console.log({updateUnit})
   }
 }
+// onMounted(async () => {
+//   await loadData()
+// })
 </script>
 

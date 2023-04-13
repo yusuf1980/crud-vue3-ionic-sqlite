@@ -18,7 +18,7 @@ export default defineComponent({
     IonRouterOutlet,
   },
   setup() {
-    const database = ref<any>(null)
+    // const database = ref<any>(null)
     // provide("SQLITE-DB", database)    
     
     // const addInvoiceSell = async () => {

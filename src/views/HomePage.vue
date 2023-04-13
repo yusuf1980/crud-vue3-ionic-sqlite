@@ -19,7 +19,7 @@
           <ion-title size="large">Inbox</ion-title>
         </ion-toolbar>
       </ion-header>
-        {{ queryResults }}
+
       <ion-list>
         <MessageListItem v-for="message in queryResults.values" :key="message.invoiceNo" :message="message" />
       </ion-list>
@@ -42,7 +42,7 @@ import {
 } from '@ionic/vue';
 import MessageListItem from '@/components/MessageListItem.vue';
 import { getMessages, Message } from '@/data/messages';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import {initDb} from '../query/init'
 
 const queryResults = ref<any>(null)
@@ -53,11 +53,12 @@ const loadData = async () => {
   try {
     const init:any = await initDb();
     // alert("In home "+(database as any)?.value)
-    const res = await init.query(
-      "SELECT * FROM InvoiceSell;"
+    const res = await init.db?.query(
+      "SELECT * FROM InvoiceSell ORDER BY invoiceNo DESC;"
     )
     queryResults.value = res
     // alert("select "+ res)
+    // await init.sqlite.closeConnection("NoEncryption");
     return true
   }
   catch(e) {
@@ -66,6 +67,14 @@ const loadData = async () => {
 }
 
 // const data = ref<any>([])
+
+// watch(() => queryResults.value, (first, second) => {
+//       console.log(
+//         "Watch props.selected function called with args:",
+//         first,
+//         second
+//       );
+// });
 
 const refresh = (ev: CustomEvent) => {
   setTimeout(() => {

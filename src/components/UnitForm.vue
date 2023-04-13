@@ -2,15 +2,15 @@
 <div>
 <div style="height: 250px; overflow: auto;">
         <ion-grid>
-          <ion-row v-for="(unit, i) in formUnit" :key="i">
+          <ion-row v-for="(unit, i) in items" :key="i">
             <ion-col>
-              <ion-input v-model="unit.item" :label="'Item ' + unit.id" fill="solid" label-placement="floating"  placeholder="Item"></ion-input>
+              <ion-input v-model="unit.aName" :label="'Item ' + (i+1)" fill="solid" label-placement="floating"  placeholder="Item"></ion-input>
             </ion-col>
             <ion-col>
-              <ion-input v-model="unit.qty" @focusout="countPrice(unit.id)" label="Qty" type="number" fill="solid"  label-placement="floating" placeholder="Quantity"></ion-input>
+              <ion-input v-model="unit.quantity" @focusout="countPrice(unit.orderNo)" label="Qty" type="number" fill="solid"  label-placement="floating" placeholder="Quantity"></ion-input>
             </ion-col>
             <ion-col>
-              <ion-input v-model="unit.price" @focusout="countPrice(unit.id)" label="$" type="number" fill="solid" label-placement="floating"  placeholder="Price"></ion-input>
+              <ion-input v-model="unit.price" @focusout="countPrice(unit.orderNo)" label="$" type="number" fill="solid" label-placement="floating"  placeholder="Price"></ion-input>
             </ion-col>
         </ion-row>
       </ion-grid>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, defineProps } from 'vue'
+import { reactive, defineProps, onUpdated, watch} from 'vue'
 import {
   IonInput,
   IonGrid,
@@ -38,47 +38,62 @@ import {
 
 // console.log(props.formUnit)
 
-const emit = defineEmits(['unitUpdate'])
+const emit = defineEmits(['unitUpdate', 'addRow'])
+const props = defineProps(['items'])
 
 interface Unit {
-  id:number;
-  qty:any;
+  orderNo:number;
+  quantity:any;
   price:any;
-  item:string;
+  aName:string;
 }
 const formUnit:Unit[] = reactive([
-  {id: 1, item: '', qty: 1, price:null},
-  {id: 2, item: '', qty: 1, price:null},
-  {id: 3, item: '', qty: 1, price:null},
+  // {orderNo: 1, aName: '', quantity: 1, price:null},
+  // {orderNo: 2, aName: '', quantity: 1, price:null},
+  // {orderNo: 3, aName: '', quantity: 1, price:null},
 ])
 const addRow = () => {
-  let lastId:any
-  if(formUnit.length) {
-    lastId = formUnit.slice(-1)[0]
-     console.log(lastId.id)
-  }
-  else lastId = 0;
-  formUnit.push({id: lastId.id + 1, item: '', qty: 1, price:null})
+  emit('addRow')
+  // let lastId:any
+  // if(props.items.length) {
+  //   lastId = props.items.slice(-1)[0]
+  //    console.log(lastId.orderNo)
+  // }
+  // else lastId = 0;
+  // props.items.push({orderNo: lastId.orderNo + 1, aName: '', quantity: 1, price:null})
 }
 
 const countPrice = (id:number) => {
   let tot:any = 0
-  const item:any = formUnit.find((a) => a.id == id)
+  const item:any = formUnit.find((a) => a.orderNo == id)
   if(item != undefined && item.item === '') {
     item.price = null
     return alert('name required')
   }
   formUnit.forEach((a) => {
-    if(a.price != null) return tot += parseInt(a.price) * parseInt(a.qty)
+    if(a.price != null) return tot += parseInt(a.price) * parseInt(a.quantity)
   })
   const updateUnit:Unit[] = []
   formUnit.forEach(unit=> {
-    if(unit.price != null && unit.item != '') {
+    if(unit.price != null && unit.aName != '') {
         updateUnit.push(unit)
     }
   })
   console.log(updateUnit)
   if(isNaN(tot)) tot = 0;
-  emit('unitUpdate', {tot, updateUnit} )
+  emit('unitUpdate', {tot} )
 }
+watch(() => props.items, (first, second) => {
+      console.log(
+        "Watch props.selected function called with args:",
+        first,
+        second
+      );
+    });
+
+onUpdated(() => {
+  // console.log('props item: ', props.items)
+  //   formUnit = props.items
+  //   console.log('form unit: ', formUnit)
+})
 </script>
