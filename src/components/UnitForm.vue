@@ -88,13 +88,13 @@ const countPrice = (id:number) => {
   if(isNaN(tot)) tot = 0;
   emit('unitUpdate', {tot} )
 }
-watch(() => props.items, (first, second) => {
-      console.log(
-        "Watch props.selected function called with args:",
-        first,
-        second
-      );
-    });
+// watch(() => props.items, (first, second) => {
+//       console.log(
+//         "Watch props.selected function called with args:",
+//         first,
+//         second
+//       );
+//     });
 
 onUpdated(() => {
   // console.log('props item: ', props.items)
