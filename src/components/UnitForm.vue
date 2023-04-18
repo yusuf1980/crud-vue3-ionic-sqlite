@@ -41,7 +41,7 @@ import { useStore } from 'vuex';
 
 const store = useStore()
 const units = computed(()=>store.getters.getFormUnit)
-console.log({units})
+// console.log({units})
 
 const emit = defineEmits(['unitUpdate', 'addRow'])
 const props = defineProps(['items'])
