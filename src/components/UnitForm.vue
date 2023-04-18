@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, defineProps, onUpdated, watch, computed} from 'vue'
+import { computed } from 'vue'
 import {
   IonInput,
   IonGrid,
@@ -33,18 +33,10 @@ import {
 } from '@ionic/vue';
 import { useStore } from 'vuex';
 
-// interface Props {
-//   formUnit: object;
-// }
-
-// console.log(props.formUnit)
-
 const store = useStore()
 const units = computed(()=>store.getters.getFormUnit)
-// console.log({units})
 
 const emit = defineEmits(['unitUpdate', 'addRow'])
-const props = defineProps(['items'])
 
 interface Unit {
   orderNo:number;
@@ -52,39 +44,24 @@ interface Unit {
   price:any;
   aName:string;
 }
-const formUnit:Unit[] = reactive([
-  // {orderNo: 1, aName: '', quantity: 1, price:null},
-  // {orderNo: 2, aName: '', quantity: 1, price:null},
-  // {orderNo: 3, aName: '', quantity: 1, price:null},
-])
-const addRow = () => {
-  emit('addRow')
-  // let lastId:any
-  // if(props.items.length) {
-  //   lastId = props.items.slice(-1)[0]
-  //    console.log(lastId.orderNo)
-  // }
-  // else lastId = 0;
-  // props.items.push({orderNo: lastId.orderNo + 1, aName: '', quantity: 1, price:null})
-}
+const addRow = () => emit('addRow')
 
 const countPrice = (id:number) => {
   let tot:any = 0
-  const item:any = formUnit.find((a) => a.orderNo == id)
+  const item:any = units.value.find((a) => a.orderNo == id)
   if(item != undefined && item.item === '') {
     item.price = null
     return alert('name required')
   }
-  formUnit.forEach((a) => {
+  units.value.forEach((a:Unit) => {
     if(a.price != null) return tot += parseInt(a.price) * parseInt(a.quantity)
   })
   const updateUnit:Unit[] = []
-  formUnit.forEach(unit=> {
+  units.value.forEach((unit:Unit)=> {
     if(unit.price != null && unit.aName != '') {
         updateUnit.push(unit)
     }
   })
-  console.log(updateUnit)
   if(isNaN(tot)) tot = 0;
   emit('unitUpdate', {tot} )
 }
@@ -95,10 +72,4 @@ const countPrice = (id:number) => {
 //         second
 //       );
 //     });
-
-onUpdated(() => {
-  // console.log('props item: ', props.items)
-  //   formUnit = props.items
-  //   console.log('form unit: ', formUnit)
-})
 </script>

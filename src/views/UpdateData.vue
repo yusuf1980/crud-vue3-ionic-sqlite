@@ -29,7 +29,6 @@
       </div>
 
       <unit-form
-      :items="items"
       @unitUpdate="updateTotal"
       @addRow="addRow"
       /> 
@@ -50,8 +49,8 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { reactive, onMounted, onUpdated } from 'vue'
-import { getMessage, Message } from '../data/messages';
+import { reactive } from 'vue'
+// import { getMessage, Message } from '../data/messages';
 import {
   IonItem,
   IonLabel,
@@ -82,6 +81,7 @@ const id = route.params.id;
 store.dispatch('getInvoice', id)
 
 const form = computed(()=>store.getters.getForm)
+const units = computed(()=>store.getters.getFormUnit)
 
 interface Obj {
   rows:number;
@@ -104,105 +104,68 @@ interface Unit {
 }
 
 const queryResult = ref<any>(null)
-let items = reactive<any>([
+const items = reactive<any>([
   // {orderNo: 1, aName: '', quantity: 1, price:null},
   // {orderNo: 2, aName: '', quantity: 1, price:null},
   // {orderNo: 3, aName: '', quantity: 1, price:null},
 ])
 
-const loadData = async () => {
-  try {
-    const init:any = await initDb();
-    const res = await init.db?.query(
-      "SELECT * FROM InvoiceSell WHERE invoiceNo=?;", [id]
-    )
-    queryResult.value = res.values[0]
-    // await init.sqilite.closeConnection("NoEncryption");
-    // form.name = queryResult.value.aName
-    // form.phone = queryResult.value.userNumber
-    // form.date = queryResult.value.dateG
-    // form.total = queryResult.value.amountPayed
+// watch(() => items, (first, second) => {
+//       console.log(
+//         "Watch props.selected function called with args:",
+//         first,
+//         second
+//       );
+//     });
 
-    const resItems = await init.db?.query(
-      "SELECT * FROM InvoiceSellUnit WHERE invoiceNo=?;", [id]
-    )
-    
-    items = resItems.values
-    
-    return true
-  }
-  catch(e) {
-    alert('error select details')
-  }
-}
-
-watch(() => items, (first, second) => {
-      console.log(
-        "Watch props.selected function called with args:",
-        first,
-        second
-      );
-    });
-
-const addRow = () => {
+const addRow = async () => {
   let lastId:any
-  if(items.value.length) {
-    lastId = items.slice(-1)[0]
-     console.log(lastId.orderNo)
+  if(units.value.length) {
+    lastId = await units.value.slice(-1)[0]
   }
-  else lastId = 0;
-  items.push({orderNo: lastId.orderNo + 1, aName: '', quantity: 1, price:null})
+  else {
+    const last = await store.dispatch('getLastId')
+    lastId = last.values[0]
+    console.log({lastId})
+  }
+  const newUnit = {orderNo: lastId.orderNo + 1, aName: '', quantity: 1, price:null};
+  store.commit('addUnit', newUnit)
 }
 
-const message = getMessage(parseInt(route.params.id as string, 10))
+// const message = getMessage(parseInt(route.params.id as string, 10))
 
 interface Update {
   tot: number;
-  // updateUnit: any
+  // updateUnit: 
 }
 
 const updateTotal = (val:Update) => {
   let tot:any = 0
-  items.forEach((a:any) => {
+  units.value.forEach((a:any) => {
     if(a.price != null) return tot += parseInt(a.price) * parseInt(a.quantity)
   })
-  // form.total = tot
+  form.value.total = tot
 }
 
 const submit = async () => {
+  console.log('submit')
   const updateUnit:Unit[] = []
-  if(items.length > 0) {
-    items.forEach((unit:Unit)=> {
-    if(unit.price != null && unit.aName != '') {
-        updateUnit.push(unit)
-    }
-  })
-  try {
-    const date = '2023/04/13';
-    const init:any = await initDb();
-    // const res = await init.db?.query(
-    //   "UPDATE InvoiceSell SET aName=?, userNumber=?, amountPayed=? WHERE invoiceNo=?;", [form.name, form.phone, form.total ,id]
-    // )
-    // updateUnit.forEach(async (item:Unit) => {
-    //   await init.db?.query(
-    //     "UPDATE InvoiceSellUnit SET aName=?, quantity=?, price=? WHERE orderNo=?;", [item.aName, parseInt(item.quantity), parseInt(item.price) ,item.orderNo]
-    //   )
-    // })
+  if(units.value.length > 0) {
+    units.value.forEach((unit:Unit)=> {
+      if(unit.price != null && unit.aName != '') {
+          updateUnit.push(unit)
+      }
+    })
+  }
+  else return
 
-    store.dispatch('getInvoices')
+  const update = await store.dispatch('updateInvoice', {form: form, units: updateUnit, id:id})
+  
+  if(update) {
+    // store.commit('clearData')
+    await store.dispatch('getInvoices')
     router.push('/home')
   }
-  catch(e) {
-    alert('error update details')
-    console.log('error updatae ', e)
-  }
-    // if(form.name === '') form.name = "Unknow"
-    // form.date = new Date().getDate().toString()
-    console.log({updateUnit})
-  }
 }
-onMounted(async () => {
-  // await loadData()
-})
 </script>
 
