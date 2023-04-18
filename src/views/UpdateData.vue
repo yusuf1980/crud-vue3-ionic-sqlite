@@ -67,8 +67,21 @@ import {
 import UnitForm from '@/components/UnitForm.vue';
 import HeaderForm from '@/components/HeaderForm.vue';
 import {initDb} from '../query/init'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
+import {useStore} from 'vuex'
 // import router from '@/router';
+
+const store = useStore();
+
+const formUnit:Unit[] = reactive([])
+
+const route = useRoute();
+const router = useRouter()
+const id = route.params.id;
+
+store.dispatch('getInvoice', id)
+
+const form = computed(()=>store.getters.getForm)
 
 interface Obj {
   rows:number;
@@ -76,26 +89,19 @@ interface Obj {
 const state:Obj =  reactive({
   rows: 3,
 })
-const form: Message = reactive({
-  name: '',
-  phone: '',
-  date: '2023/04/02',
-  total: 0,
-})
+
+// const form: Message = reactive({
+//   name: '',
+//   phone: '',
+//   date: '2023/04/02',
+//   total: 0,
+// })
 interface Unit {
   orderNo:number;
   quantity:any;
   price:any;
   aName:string;
 }
-const formUnit:Unit[] = reactive([])
-
-const route = useRoute();
-const router = useRouter()
-const id = route.params.id;
-// const homeRoute = 
-
-// const fHomeRoute = () => router.push('/home');
 
 const queryResult = ref<any>(null)
 let items = reactive<any>([
@@ -112,10 +118,10 @@ const loadData = async () => {
     )
     queryResult.value = res.values[0]
     // await init.sqilite.closeConnection("NoEncryption");
-    form.name = queryResult.value.aName
-    form.phone = queryResult.value.userNumber
-    form.date = queryResult.value.dateG
-    form.total = queryResult.value.amountPayed
+    // form.name = queryResult.value.aName
+    // form.phone = queryResult.value.userNumber
+    // form.date = queryResult.value.dateG
+    // form.total = queryResult.value.amountPayed
 
     const resItems = await init.db?.query(
       "SELECT * FROM InvoiceSellUnit WHERE invoiceNo=?;", [id]
@@ -160,7 +166,7 @@ const updateTotal = (val:Update) => {
   items.forEach((a:any) => {
     if(a.price != null) return tot += parseInt(a.price) * parseInt(a.quantity)
   })
-  form.total = tot
+  // form.total = tot
 }
 
 const submit = async () => {
@@ -174,15 +180,16 @@ const submit = async () => {
   try {
     const date = '2023/04/13';
     const init:any = await initDb();
-    const res = await init.db?.query(
-      "UPDATE InvoiceSell SET aName=?, userNumber=?, amountPayed=? WHERE invoiceNo=?;", [form.name, form.phone, form.total ,id]
-    )
-    updateUnit.forEach(async (item:Unit) => {
-      await init.db?.query(
-        "UPDATE InvoiceSellUnit SET aName=?, quantity=?, price=? WHERE orderNo=?;", [item.aName, parseInt(item.quantity), parseInt(item.price) ,item.orderNo]
-      )
-    })
-    
+    // const res = await init.db?.query(
+    //   "UPDATE InvoiceSell SET aName=?, userNumber=?, amountPayed=? WHERE invoiceNo=?;", [form.name, form.phone, form.total ,id]
+    // )
+    // updateUnit.forEach(async (item:Unit) => {
+    //   await init.db?.query(
+    //     "UPDATE InvoiceSellUnit SET aName=?, quantity=?, price=? WHERE orderNo=?;", [item.aName, parseInt(item.quantity), parseInt(item.price) ,item.orderNo]
+    //   )
+    // })
+
+    store.dispatch('getInvoices')
     router.push('/home')
   }
   catch(e) {
@@ -195,7 +202,7 @@ const submit = async () => {
   }
 }
 onMounted(async () => {
-  await loadData()
+  // await loadData()
 })
 </script>
 

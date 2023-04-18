@@ -21,7 +21,7 @@
       </ion-header>
 
       <ion-list>
-        <MessageListItem v-for="message in queryResults.values" :key="message.invoiceNo" :message="message" />
+        <MessageListItem v-for="message in data" :key="message.invoiceNo" :message="message" />
       </ion-list>
     </ion-content>
   </ion-page>
@@ -42,47 +42,16 @@ import {
 } from '@ionic/vue';
 import MessageListItem from '@/components/MessageListItem.vue';
 import { getMessages, Message } from '@/data/messages';
-import { ref, onMounted, watch } from 'vue';
-import {initDb} from '../query/init'
+import { ref, computed } from 'vue';
+import {useStore} from 'vuex'
 
-const queryResults = ref<any>(null)
-
+const store = useStore();
+store.dispatch('getInvoices')
+const data = computed(()=>store.getters.getInvoices);
 const messages = ref<Message[]>(getMessages());
-
-const loadData = async () => {
-  try {
-    const init:any = await initDb();
-    // alert("In home "+(database as any)?.value)
-    const res = await init.db?.query(
-      "SELECT * FROM InvoiceSell ORDER BY invoiceNo DESC;"
-    )
-    queryResults.value = res
-    // alert("select "+ res)
-    // await init.sqlite.closeConnection("NoEncryption");
-    return true
-  }
-  catch(e) {
-    alert('error select invoice')
-  }
-}
-
-// const data = ref<any>([])
-
-// watch(() => queryResults.value, (first, second) => {
-//       console.log(
-//         "Watch props.selected function called with args:",
-//         first,
-//         second
-//       );
-// });
-
 const refresh = (ev: CustomEvent) => {
   setTimeout(() => {
     ev.detail.complete();
   }, 3000);
 };
-onMounted(async () => {
-  // await loadInit()
-  await loadData()
-})
 </script>

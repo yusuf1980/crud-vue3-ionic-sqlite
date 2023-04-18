@@ -2,7 +2,7 @@
 <div>
 <div style="height: 250px; overflow: auto;">
         <ion-grid>
-          <ion-row v-for="(unit, i) in items" :key="i">
+          <ion-row v-for="(unit, i) in units" :key="i">
             <ion-col>
               <ion-input v-model="unit.aName" :label="'Item ' + (i+1)" fill="solid" label-placement="floating"  placeholder="Item"></ion-input>
             </ion-col>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, defineProps, onUpdated, watch} from 'vue'
+import { reactive, defineProps, onUpdated, watch, computed} from 'vue'
 import {
   IonInput,
   IonGrid,
@@ -31,12 +31,17 @@ import {
   IonCol,
   IonButton,
 } from '@ionic/vue';
+import { useStore } from 'vuex';
 
 // interface Props {
 //   formUnit: object;
 // }
 
 // console.log(props.formUnit)
+
+const store = useStore()
+const units = computed(()=>store.getters.getFormUnit)
+console.log({units})
 
 const emit = defineEmits(['unitUpdate', 'addRow'])
 const props = defineProps(['items'])
