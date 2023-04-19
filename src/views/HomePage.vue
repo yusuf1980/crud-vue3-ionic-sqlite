@@ -41,17 +41,17 @@ import {
   IonButtons
 } from '@ionic/vue';
 import MessageListItem from '@/components/MessageListItem.vue';
-import { getMessages, Message } from '@/data/messages';
-import { ref, computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import {useStore} from 'vuex'
 
 const store = useStore();
-store.dispatch('getInvoices')
 const data = computed(()=>store.getters.getInvoices);
-const messages = ref<Message[]>(getMessages());
 const refresh = (ev: CustomEvent) => {
   setTimeout(() => {
     ev.detail.complete();
   }, 3000);
 };
+onMounted(async()=>{
+  await store.dispatch('getInvoices')
+})
 </script>

@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, defineEmits } from 'vue'
 import {
   IonInput,
   IonGrid,
@@ -32,7 +32,6 @@ import {
   IonButton,
 } from '@ionic/vue';
 import { useStore } from 'vuex';
-
 const store = useStore()
 const units = computed(()=>store.getters.getFormUnit)
 
@@ -48,7 +47,7 @@ const addRow = () => emit('addRow')
 
 const countPrice = (id:number) => {
   let tot:any = 0
-  const item:any = units.value.find((a) => a.orderNo == id)
+  const item:any = units.value.find((a:Unit) => a.orderNo == id)
   if(item != undefined && item.item === '') {
     item.price = null
     return alert('name required')
@@ -65,11 +64,4 @@ const countPrice = (id:number) => {
   if(isNaN(tot)) tot = 0;
   emit('unitUpdate', {tot} )
 }
-// watch(() => props.items, (first, second) => {
-//       console.log(
-//         "Watch props.selected function called with args:",
-//         first,
-//         second
-//       );
-//     });
 </script>

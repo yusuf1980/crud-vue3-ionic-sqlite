@@ -33,6 +33,10 @@
       @addRow="addRow"
       /> 
 
+      <div class="ion-padding">
+        <ion-button color="danger" @click="remove" >Remove</ion-button>
+      </div>
+
       <div class="ion-float-right">
       <ion-grid>
         <ion-row>
@@ -49,7 +53,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { reactive } from 'vue'
+import { reactive, onBeforeMount } from 'vue'
 // import { getMessage, Message } from '../data/messages';
 import {
   IonItem,
@@ -70,8 +74,6 @@ import {useStore} from 'vuex'
 
 const store = useStore();
 
-const formUnit:Unit[] = reactive([])
-
 const route = useRoute();
 const router = useRouter()
 const id = route.params.id;
@@ -80,13 +82,6 @@ store.dispatch('getInvoice', id)
 
 const form = computed(()=>store.getters.getForm)
 const units = computed(()=>store.getters.getFormUnit)
-
-interface Obj {
-  rows:number;
-}
-const state:Obj =  reactive({
-  rows: 3,
-})
 
 interface Unit {
   orderNo:number;
@@ -103,14 +98,10 @@ const addRow = async () => {
   else {
     const last = await store.dispatch('getLastId')
     lastId = last.values[0]
-    console.log({lastId})
   }
   const newUnit = {orderNo: lastId.orderNo + 1, aName: '', quantity: 1, price:null};
   store.commit('addUnit', newUnit)
 }
-
-// const message = getMessage(parseInt(route.params.id as string, 10))
-
 interface Update {
   tot: number;
 }
@@ -124,7 +115,6 @@ const updateTotal = (val:Update) => {
 }
 
 const submit = async () => {
-  console.log('submit')
   const updateUnit:Unit[] = []
   if(units.value.length > 0) {
     units.value.forEach((unit:Unit)=> {
@@ -139,8 +129,19 @@ const submit = async () => {
   
   if(update) {
     await store.dispatch('getInvoices')
+    await store.dispatch('getUnits', id)
     router.push('/home')
   }
+}
+const remove = async () => {
+  const text = "Are you sure remove this!";
+  if (confirm(text) == true) {
+    const remove = await store.dispatch('remove', id)
+    if(remove) {
+      router.push('/home')
+    }
+  } 
+  return
 }
 </script>
 
