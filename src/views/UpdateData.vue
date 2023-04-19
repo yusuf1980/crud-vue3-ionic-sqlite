@@ -65,10 +65,8 @@ import {
 } from '@ionic/vue';
 import UnitForm from '@/components/UnitForm.vue';
 import HeaderForm from '@/components/HeaderForm.vue';
-import {initDb} from '../query/init'
-import { ref, watch, computed } from 'vue'
+import { computed } from 'vue'
 import {useStore} from 'vuex'
-// import router from '@/router';
 
 const store = useStore();
 
@@ -90,33 +88,12 @@ const state:Obj =  reactive({
   rows: 3,
 })
 
-// const form: Message = reactive({
-//   name: '',
-//   phone: '',
-//   date: '2023/04/02',
-//   total: 0,
-// })
 interface Unit {
   orderNo:number;
   quantity:any;
   price:any;
   aName:string;
 }
-
-const queryResult = ref<any>(null)
-const items = reactive<any>([
-  // {orderNo: 1, aName: '', quantity: 1, price:null},
-  // {orderNo: 2, aName: '', quantity: 1, price:null},
-  // {orderNo: 3, aName: '', quantity: 1, price:null},
-])
-
-// watch(() => items, (first, second) => {
-//       console.log(
-//         "Watch props.selected function called with args:",
-//         first,
-//         second
-//       );
-//     });
 
 const addRow = async () => {
   let lastId:any
@@ -136,7 +113,6 @@ const addRow = async () => {
 
 interface Update {
   tot: number;
-  // updateUnit: 
 }
 
 const updateTotal = (val:Update) => {
@@ -162,7 +138,6 @@ const submit = async () => {
   const update = await store.dispatch('updateInvoice', {form: form, units: updateUnit, id:id})
   
   if(update) {
-    // store.commit('clearData')
     await store.dispatch('getInvoices')
     router.push('/home')
   }

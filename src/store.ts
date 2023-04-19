@@ -11,8 +11,6 @@ const state = {
     },
     formUnit: [
         {orderNo: 1, aName: '', quantity: 1, price:null},
-        {orderNo: 2, aName: '', quantity: 1, price:null},
-        {orderNo: 3, aName: '', quantity: 1, price:null},
     ],
 }
 const getters = {
@@ -31,21 +29,21 @@ const mutations = {
         state.invoices = payload.values
     },
     setFormInvoices(state:any, payload:any) {
-        state.form.name = payload[0].main.aName
-        state.form.phone = payload[0].main.userNumber
-        state.form.date = payload[0].main.dateG
-        state.form.total = payload[0].main.amountPayed
-
-        state.formUnit = payload[1].units  
+        state.form.name = payload.aName
+        state.form.phone = payload.userNumber
+        state.form.date = payload.dateG
+        state.form.total = payload.amountPayed 
+    },
+    setUnits(state:any, payload:any) {
+        console.log({payload})
+        state.formUnit = payload  
     },
     addUnit(state:any, payload:any) {
         state.formUnit.push(payload)
     },
     clearData(state:any) {
         state.formUnit = [
-            {orderNo: 1, aName: '', quantity: 1, price:null},
-            {orderNo: 2, aName: '', quantity: 1, price:null},
-            {orderNo: 3, aName: '', quantity: 1, price:null},
+            {orderNo: 1, aName: '', quantity: 1, price:null}
         ];
     },
     zeroData(state:any) {
@@ -71,20 +69,31 @@ const actions = {
             return alert('error select invoice ')
           }
     },
-    async getInvoice({commit}:any, payload:number) {
+    async getInvoice({commit, dispatch}:any, payload:number) {
         try {
+            dispatch('getUnits', payload)
             const init:any = await initDb();
             const res:any = await init.db?.query("SELECT * FROM InvoiceSell WHERE invoiceNo=?;", [payload])
-            const pay:any = [{main: res.values[0]}]
-            const resItems = await init.db?.query("SELECT * FROM InvoiceSellUnit WHERE invoiceNo=?;", [payload])
-            pay.push({units: resItems.values})
-            await commit('setFormInvoices', pay)
+            commit('setFormInvoices', res.values[0])
             return true
           }
           catch(e) {
             console.log('error details ', e)
             return alert('error select details')
           }
+    },
+    async getUnits({commit}:any, payload:number) {
+        try {
+            const init:any = await initDb();
+            const resItems = await init.db?.query("SELECT * FROM InvoiceSellUnit WHERE invoiceNo=?;", [payload])
+            commit('setUnits', resItems.values)
+            return true
+        }
+        catch(e) {
+            console.log('error get units ', e)
+            alert('error get Units')
+            return false
+        }
     },
     async updateInvoice({commit, state}:any, payload:any) {
         interface Unit {
@@ -99,7 +108,7 @@ const actions = {
             const res = await init.db?.query(
               "UPDATE InvoiceSell SET aName=?, userNumber=?, amountPayed=? WHERE invoiceNo=?;", [payload.form.value.name, payload.form.value.phone, payload.form.value.total ,payload.id]
             )
-            // commit('zeroData')
+
             const newData:any[] = []
             await payload.units.forEach(async (item:Unit) => {
                 const exist = await init.db?.query('SELECT * FROM InvoiceSellUnit WHERE orderNo=?', [item.orderNo]);
@@ -116,7 +125,7 @@ const actions = {
                     }
                 } 
             })
-            console.log({newData})
+
             await commit('updateUnit', newData)
             return true;
         }
